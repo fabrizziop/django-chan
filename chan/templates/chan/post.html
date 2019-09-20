@@ -1,0 +1,66 @@
+{% extends 'chan/base.html' %}
+
+{% block head_title %} /{{board.board_alias}}/ - {{board.board_name}} {% endblock %}
+
+{% block head_misc %}
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{% endblock %}
+
+{% block page_title %} 
+<h1>/{{board.board_alias}}/ - {{board.board_name}} </h1>
+<h4><a class="back" href="{% url 'chan:all_boards' %}">Back to Main</a></h4>
+<h3><a class="back" href="{% url 'chan:specific_board' board.board_alias 1 %}">Back to /{{board.board_alias}}/</a></h3>
+
+{% endblock %}
+
+{% block page_content %}
+	{% if post_successful %} <h1>Post Successful!</h1> {% endif %}
+	<form id="main-form" action="{% url 'chan:specific_post' board.board_alias post.id %}" method="post" enctype="multipart/form-data">
+	{% csrf_token %}
+		<table>
+		{{form.as_table}}
+		</table>
+		{% if captcha_ok == False %}
+		<h2>Wrong Captcha!</h2>
+		{% endif %}
+		<div class="recaptcha-center">
+			<div class="g-recaptcha" data-sitekey="6LdcYrkUAAAAAPepCr_F9gO5L3ZgB4i2Uv65zO3x"></div>
+		</div>
+	<input id="main-form-submit" type="submit" value="Post!">
+	</form>
+	<h3>Post #{{post.id}}</h3>
+	<div class="post">
+		<p class="info-p">
+		{{post.date|date:"r"}}
+		{% if post.tripcode != "" %}
+			<br>
+			<em>{{post.tripcode}}</em>
+		{% endif %}
+		</p>
+		{% if post.image %}
+			<a href="{{post.image.url}}"><img src="{{post.image.url}}", alt="{{post.title}}"></a>
+		{% endif %}
+		<h3>{{post.title}}</h3>
+		<p class="content-p">{{post.content}}</p>
+	</div>
+
+	{% for reply in replies %}
+		<div class="replies">
+			<p class="info-p">
+			{{reply.date|date:"r"}}
+			{% if reply.tripcode != "" %}
+				<br>
+				<em>{{reply.tripcode}}</em>
+			{% endif %}
+			</p>
+			{% if reply.image %}
+				<a href="{{reply.image.url}}"><img src="{{reply.image.url}}", alt="{{reply.title}}"></a>
+			{% endif %}
+			<h4> {{reply.title}} </h4>
+			<p class="content-p"> {{reply.content}} </p>
+		</div>
+	{% endfor %}
+
+
+
+{% endblock %}

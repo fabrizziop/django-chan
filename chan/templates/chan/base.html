@@ -1,0 +1,17 @@
+{% load static %}
+<html>
+    <head>
+        <title>{% block head_title %}{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'chan/style.css' %}">
+        {% block head_misc %}{% endblock %}
+    </head>
+    <body>
+        <div id="page-title">
+            {% block page_title %}{% endblock %}
+        </div>
+
+        <div id="page-content">
+        	{% block page_content %}{% endblock %}
+        </div>
+    </body>
+</html>

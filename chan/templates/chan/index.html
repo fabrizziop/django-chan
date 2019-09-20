@@ -1,0 +1,13 @@
+{% extends 'chan/base.html' %}
+
+{% block page_title %} 
+<h1> Welcome to DjangoChan </h1>
+{% endblock %}
+
+
+{% block page_content %}
+	<h2>Available Boards</h2>
+	{% for board in boards %}
+		<a class="avail-board" href="{% url 'chan:specific_board' board.board_alias 1 %}" >/{{board.board_alias}}/ - {{board.board_name}}</a>
+	{% endfor %}
+{% endblock %}
