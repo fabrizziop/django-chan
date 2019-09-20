@@ -30,6 +30,5 @@ class ChanPostReply(models.Model):
 	ip = models.CharField(max_length=128, default="", blank=True)
 	container_post = models.ForeignKey(ChanPost, on_delete=models.CASCADE)
 
-
 	def __str__(self):
 		return self.container_post.container_board.board_alias + "#"+str(self.container_post.id)+ " r# " + str(self.id)
