@@ -100,6 +100,7 @@ def specific_post(request, board_alias, post_id, post_successful=None):
 				obj.container_post = ChanPost.objects.get(id=post_id)
 				if obj.content != "":
 					obj.container_post.last_touch = timezone.now()
+					obj.container_post.save()
 					obj.save()
 					print("VALID")
 				form = ChanPostReplyForm()
