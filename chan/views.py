@@ -3,6 +3,7 @@ from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import ChanBoard, ChanPost, ChanPostReply
 from .forms import ChanPostForm, ChanPostReplyForm
@@ -41,13 +42,12 @@ def specific_board(request, board_alias, page_number):
 				captcha_ok = True
 				print("CAPTCHA OK")
 				obj = form.save(commit=False)
-				obj.ip = "0.0.0.0 PLACEHOLDER"
+				obj.ip = request.META.get('HTTP_X_REAL_IP') or "0.0.0.0 PLACEHOLDER"
 				if obj.tripcode != "":
 					obj.tripcode = hashlib.sha3_224(bytes(obj.tripcode, "utf-8")).hexdigest()
 				obj.container_board = ChanBoard.objects.get(board_alias=board_alias)
 				if obj.content != "":
 					obj.save()
-					print(request.META.get('HTTP_X_FORWARDED_FOR'))
 					print("VALID")
 					return HttpResponseRedirect(reverse('chan:specific_post', args=(board_alias, obj.id, "success")))
 			else:
@@ -94,13 +94,13 @@ def specific_post(request, board_alias, post_id, post_successful=None):
 				captcha_ok = True
 				print("CAPTCHA OK")
 				obj = form.save(commit=False)
-				obj.ip = "0.0.0.0 PLACEHOLDER"
+				obj.ip = request.META.get('HTTP_X_REAL_IP') or "0.0.0.0 PLACEHOLDER"
 				if obj.tripcode != "":
 					obj.tripcode = hashlib.sha3_224(bytes(obj.tripcode, "utf-8")).hexdigest()
 				obj.container_post = ChanPost.objects.get(id=post_id)
 				if obj.content != "":
+					obj.container_post.last_touch = timezone.now()
 					obj.save()
-					print(request.META.get('HTTP_X_FORWARDED_FOR'))
 					print("VALID")
 				form = ChanPostReplyForm()
 			else:
